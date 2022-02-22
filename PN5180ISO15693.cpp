@@ -523,7 +523,13 @@ ISO15693ErrorCode PN5180ISO15693::issueISO15693Command(uint8_t *cmd, uint8_t cmd
 	return EC_NO_CARD;
   }
   
+//Make sure this while loop can exit after some time, if it never becomes true
+unsigned long startedWaiting = millis();
   while(!(irqR & RX_IRQ_STAT)) {
+	if (millis() - startedWaiting > 1500) {
+           Serial.println(F("RX IRQ STAT FAILED"));
+           break;
+	}
 	delay(1);
 	irqR = getIRQStatus();
   }
